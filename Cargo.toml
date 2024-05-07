@@ -1,0 +1,23 @@
+[package]
+name = "spendr-api"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+argon2 = "0.5.3"
+axum = { version = "0.7.5", features = ["macros"] }
+chrono = "0.4.38"
+dotenvy = "0.15.7"
+dotenvy_macro = "0.15.7"
+jsonwebtoken = "9.3.0"
+sea-orm = { version = "0.12.15", features = ["runtime-tokio-rustls", "sqlx-postgres"] }
+serde = { version = "1.0.200", features = ["derive"] }
+serde_json = "1.0.116"
+serde_with = "3.8.1"
+tokio = { version = "1.37.0", features = ["macros", "rt-multi-thread"] }
+tower-http = { version = "0.5.2", features = ["cors", "trace"] }
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
+validator = "0.18.1"
