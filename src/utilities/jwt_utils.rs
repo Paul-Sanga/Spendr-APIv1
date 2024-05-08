@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use super::app_error::AppError;
 
 #[derive(Serialize, Deserialize)]
-struct Claims{
+struct Claims {
     exp: usize,
     email: String,
 }

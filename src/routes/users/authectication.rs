@@ -1,8 +1,12 @@
-use super::{RequestUserData, ResponseUserData};
+use super::{RequestUserData, RequestUserLoginCred, ResponseUserData};
 use crate::{
     database::users,
     queries::user_queries::check_user_existence,
-    utilities::{app_error::AppError, jwt_utils::create_token, password_utils::hash_password},
+    utilities::{
+        app_error::AppError,
+        jwt_utils::create_token,
+        password_utils::{hash_password, verify_password},
+    },
 };
 use axum::{extract::State, http::StatusCode, Json};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, Set};
@@ -17,7 +21,7 @@ pub async fn register_user(
 
     let user_existence = check_user_existence(&db, &request_user.email).await?;
 
-    match user_existence {
+    match user_existence.0 {
         true => Err(AppError::new(
             StatusCode::BAD_REQUEST,
             "User email is already registered".to_owned(),
@@ -30,10 +34,7 @@ pub async fn register_user(
             new_user.password = Set(hash_password(request_user.password)?);
 
             if let Ok(_) = new_user.save(&db).await {
-                
-                Ok(Json(ResponseUserData {
-                    token,
-                }))
+                Ok(Json(ResponseUserData { token }))
             } else {
                 return Err(AppError::new(
                     StatusCode::INTERNAL_SERVER_ERROR,
@@ -41,5 +42,46 @@ pub async fn register_user(
                 ));
             }
         }
+    }
+}
+
+pub async fn login(
+    State(db): State<DatabaseConnection>,
+    Json(login_creds): Json<RequestUserLoginCred>,
+) -> Result<Json<ResponseUserData>, AppError> {
+    let use_exitence = check_user_existence(&db, &login_creds.email).await?;
+    match &use_exitence.0 {
+        true => {
+            if let Some(user_model) = use_exitence.1 {
+                if let Ok(password_check) =
+                    verify_password(login_creds.password, user_model.password)
+                {
+                    return match password_check {
+                        false => Err(AppError::new(
+                            StatusCode::BAD_REQUEST,
+                            "invalid login credentials".to_owned(),
+                        )),
+                        true => {
+                            let token = create_token(&login_creds.email)?;
+                            Ok(Json(ResponseUserData { token }))
+                        }
+                    };
+                }else{
+                    Err(AppError::new(
+                        StatusCode::BAD_REQUEST,
+                        "invalid login credentials".to_owned(),
+                    ))
+                }
+            }else{
+                Err(AppError::new(
+                    StatusCode::BAD_REQUEST,
+                    "invalid login credentials".to_owned(),
+                ))
+            }
+        }
+        false => Err(AppError::new(
+            StatusCode::BAD_REQUEST,
+            "invalid login credentials".to_owned(),
+        )),
     }
 }
