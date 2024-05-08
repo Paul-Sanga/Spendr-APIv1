@@ -49,39 +49,28 @@ pub async fn login(
     State(db): State<DatabaseConnection>,
     Json(login_creds): Json<RequestUserLoginCred>,
 ) -> Result<Json<ResponseUserData>, AppError> {
-    let use_exitence = check_user_existence(&db, &login_creds.email).await?;
-    match &use_exitence.0 {
-        true => {
-            if let Some(user_model) = use_exitence.1 {
-                if let Ok(password_check) =
-                    verify_password(login_creds.password, user_model.password)
-                {
-                    return match password_check {
-                        false => Err(AppError::new(
-                            StatusCode::BAD_REQUEST,
-                            "invalid login credentials".to_owned(),
-                        )),
-                        true => {
-                            let token = create_token(&login_creds.email)?;
-                            Ok(Json(ResponseUserData { token }))
-                        }
-                    };
-                }else{
-                    Err(AppError::new(
-                        StatusCode::BAD_REQUEST,
-                        "invalid login credentials".to_owned(),
-                    ))
-                }
-            }else{
-                Err(AppError::new(
-                    StatusCode::BAD_REQUEST,
-                    "invalid login credentials".to_owned(),
-                ))
-            }
-        }
-        false => Err(AppError::new(
+    let (use_exitence, user_model) = check_user_existence(&db, &login_creds.email).await?;
+
+    if !use_exitence {
+        return Err(AppError::new(
             StatusCode::BAD_REQUEST,
             "invalid login credentials".to_owned(),
-        )),
+        ));
+    }
+
+    let valid_password = if let Some(user_model) = user_model {
+        verify_password(login_creds.password, user_model.password)?
+    } else {
+        false
+    };
+
+    if !valid_password {
+        return Err(AppError::new(
+            StatusCode::BAD_REQUEST,
+            "invalid login credentials".to_owned(),
+        ));
+    } else {
+        let token = create_token(&login_creds.email)?;
+        return Ok(Json(ResponseUserData { token }));
     }
 }
