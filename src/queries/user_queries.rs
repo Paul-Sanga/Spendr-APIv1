@@ -18,7 +18,10 @@ pub async fn check_user_existence(
         .one(db)
         .await
         .map_err(|_error| {
-            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
+            AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Internal server error".to_owned(),
+            )
         })?;
 
     if let Some(user) = user {
@@ -26,4 +29,15 @@ pub async fn check_user_existence(
     } else {
         return Ok((false, None));
     }
+}
+
+pub async fn get_users_query(db: &DatabaseConnection) -> Result<Vec<Model>, AppError> {
+    let users = Users::find().all(db).await.map_err(|_error| {
+        AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Internal server error".to_owned(),
+        )
+    })?;
+
+    Ok(users)
 }
