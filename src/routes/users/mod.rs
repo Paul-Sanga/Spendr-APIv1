@@ -16,3 +16,9 @@ pub struct RequestUserData {
 pub struct ResponseUserData {
     token: String,
 }
+
+#[derive(Deserialize)]
+pub struct RequestUserLoginCred {
+    email: String,
+    password: String,
+}

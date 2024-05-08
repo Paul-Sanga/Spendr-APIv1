@@ -2,7 +2,7 @@ pub mod users;
 
 use axum::{
     http::{header::CONTENT_TYPE, Method},
-    routing::{get,post},
+    routing::{get, post},
     Router,
 };
 use tower_http::{
@@ -10,8 +10,8 @@ use tower_http::{
     trace::TraceLayer,
 };
 
+use self::users::authectication::{login, register_user};
 use crate::app_state::AppState;
-use self::users::authectication::register_user;
 
 pub fn create_routes(state: AppState) -> Router {
     tracing_subscriber::fmt()
@@ -34,6 +34,7 @@ pub fn create_routes(state: AppState) -> Router {
     Router::new()
         .route("/", get(|| async { "Phantom Vasploit" }))
         .route("/api/v1/user/register", post(register_user))
+        .route("/api/v1/user/login", post(login))
         .layer(cors)
         .layer(tracing_layer)
         .with_state(state)
