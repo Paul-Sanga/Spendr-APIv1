@@ -22,3 +22,10 @@ pub struct RequestUserLoginCred {
     email: String,
     password: String,
 }
+
+#[derive(Serialize)]
+pub struct ResponseusersData {
+    first_name: String,
+    last_name: String,
+    email: String,
+}

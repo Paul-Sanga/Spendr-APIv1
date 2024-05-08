@@ -10,7 +10,7 @@ use tower_http::{
     trace::TraceLayer,
 };
 
-use self::users::authectication::{login, register_user};
+use self::users::{authectication::{login, register_user}, user_management::get_users};
 use crate::app_state::AppState;
 
 pub fn create_routes(state: AppState) -> Router {
@@ -33,8 +33,9 @@ pub fn create_routes(state: AppState) -> Router {
 
     Router::new()
         .route("/", get(|| async { "Phantom Vasploit" }))
-        .route("/api/v1/user/register", post(register_user))
-        .route("/api/v1/user/login", post(login))
+        .route("/api/v1/auth/register", post(register_user))
+        .route("/api/v1/auth/login", post(login))
+        .route("/api/v1/users", get(get_users))
         .layer(cors)
         .layer(tracing_layer)
         .with_state(state)
