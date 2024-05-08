@@ -19,28 +19,27 @@ pub async fn register_user(
         ..Default::default()
     };
 
-    let user_existence = check_user_existence(&db, &request_user.email).await?;
+    let (user_existence, _) = check_user_existence(&db, &request_user.email).await?;
 
-    match user_existence.0 {
-        true => Err(AppError::new(
+    if user_existence {
+        return Err(AppError::new(
             StatusCode::BAD_REQUEST,
             "User email is already registered".to_owned(),
-        )),
-        false => {
-            let token = create_token(&request_user.email)?;
-            new_user.first_name = Set(request_user.first_name);
-            new_user.last_name = Set(request_user.last_name);
-            new_user.email = Set(request_user.email);
-            new_user.password = Set(hash_password(request_user.password)?);
+        ));
+    } else {
+        let token = create_token(&request_user.email)?;
+        new_user.first_name = Set(request_user.first_name);
+        new_user.last_name = Set(request_user.last_name);
+        new_user.email = Set(request_user.email);
+        new_user.password = Set(hash_password(request_user.password)?);
 
-            if let Ok(_) = new_user.save(&db).await {
-                Ok(Json(ResponseUserData { token }))
-            } else {
-                return Err(AppError::new(
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    "Internal server error".to_owned(),
-                ));
-            }
+        if let Ok(_) = new_user.save(&db).await {
+            Ok(Json(ResponseUserData { token }))
+        } else {
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Internal server error".to_owned(),
+            ));
         }
     }
 }
