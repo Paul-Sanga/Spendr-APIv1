@@ -1,11 +1,12 @@
 use axum::http::StatusCode;
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
 
 use crate::{
     database::{
         prelude::Users,
         users::{self, Model},
     },
+    routes::users::UpdateUserData,
     utilities::app_error::AppError,
 };
 
@@ -48,7 +49,10 @@ pub async fn get_users_query(db: &DatabaseConnection) -> Result<Vec<Model>, AppE
     Ok(users)
 }
 
-pub async fn get_user_by_id_query(db: &DatabaseConnection, id: i32) -> Result<Model, AppError> {
+pub async fn get_user_by_id_query(
+    db: &DatabaseConnection,
+    id: i32,
+) -> Result<Option<Model>, AppError> {
     let user = Users::find()
         .filter(users::Column::Id.eq(id))
         .one(db)
@@ -60,9 +64,40 @@ pub async fn get_user_by_id_query(db: &DatabaseConnection, id: i32) -> Result<Mo
                 "error getting user by id".to_owned(),
             )
         })?;
-    if let Some(user) = user {
-        return Ok(user);
+
+    Ok(user)
+}
+
+pub async fn update_user_query(
+    db: &DatabaseConnection,
+    id: i32,
+    user_data: UpdateUserData,
+) -> Result<users::ActiveModel, AppError> {
+    let current_user_data = get_user_by_id_query(db, id).await?;
+    let current_user_data = if let Some(current_user_data) = current_user_data {
+        current_user_data
     } else {
         return Err(AppError::new(StatusCode::NOT_FOUND, "invalid user id"));
+    };
+
+    let user_model = get_user_by_id_query(db, id).await?;
+    let mut user_model: users::ActiveModel = user_model.unwrap().into();
+    user_model.id = Set(current_user_data.id);
+    user_model.email = Set(user_data.email);
+    user_model.last_name = Set(user_data.last_name);
+    user_model.first_name = Set(user_data.first_name);
+    user_model.password = Set(current_user_data.password);
+    user_model.is_verified = Set(current_user_data.is_verified);
+    user_model.is_deleted = Set(current_user_data.is_deleted);
+    user_model.created_at = Set(current_user_data.created_at);
+    user_model.updated_at = Set(Some(chrono::Utc::now().naive_utc()));
+    let updated_user = user_model.save(db).await;
+    if let Ok(updated_user) = updated_user {
+        return Ok(updated_user);
+    } else {
+        return Err(AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "internal server error",
+        ));
     }
 }

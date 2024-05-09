@@ -41,7 +41,7 @@ pub fn validate_token(token: &str) -> Result<TokenData<Claims>, AppError> {
             jsonwebtoken::errors::ErrorKind::InvalidToken
             | jsonwebtoken::errors::ErrorKind::InvalidSignature
             | jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
-                AppError::new(StatusCode::UNAUTHORIZED, "not authenticated".to_owned())
+                AppError::new(StatusCode::UNAUTHORIZED, "invalid token".to_owned())
             }
             _ => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "error validating token"),
         })
