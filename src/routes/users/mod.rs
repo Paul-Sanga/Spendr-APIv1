@@ -7,9 +7,21 @@ pub mod user_management;
 #[derive(Deserialize)]
 pub struct RequestUserData {
     email: String,
-    first_name: String,
-    last_name: String,
     password: String,
+    last_name: String,
+    first_name: String,
+}
+
+#[derive(Deserialize)]
+pub struct UpdateUserData {
+    pub email: String,
+    pub last_name: String,
+    pub first_name: String,
+}
+
+#[derive(Serialize)]
+pub struct MessageResponse {
+    message: String,
 }
 
 #[derive(Serialize)]
@@ -25,7 +37,7 @@ pub struct RequestUserLoginCred {
 
 #[derive(Serialize)]
 pub struct ResponseUserData {
-    first_name: String,
-    last_name: String,
     email: String,
+    last_name: String,
+    first_name: String,
 }
