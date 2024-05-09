@@ -1,5 +1,6 @@
 pub mod app_state;
 pub mod database;
+mod middleware;
 mod queries;
 mod routes;
 mod utilities;
