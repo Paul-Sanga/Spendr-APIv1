@@ -1,4 +1,4 @@
-use super::{RequestUserData, RequestUserLoginCred, ResponseUserData};
+use super::{AuthenticationResponseData, RequestUserData, RequestUserLoginCred};
 use crate::{
     database::users,
     queries::user_queries::check_user_existence,
@@ -14,7 +14,7 @@ use sea_orm::{ActiveModelTrait, DatabaseConnection, Set};
 pub async fn register_user(
     State(db): State<DatabaseConnection>,
     Json(request_user): Json<RequestUserData>,
-) -> Result<Json<ResponseUserData>, AppError> {
+) -> Result<Json<AuthenticationResponseData>, AppError> {
     let mut new_user = users::ActiveModel {
         ..Default::default()
     };
@@ -34,7 +34,7 @@ pub async fn register_user(
         new_user.password = Set(hash_password(request_user.password)?);
 
         if let Ok(_) = new_user.save(&db).await {
-            Ok(Json(ResponseUserData { token }))
+            Ok(Json(AuthenticationResponseData { token }))
         } else {
             return Err(AppError::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
@@ -47,7 +47,7 @@ pub async fn register_user(
 pub async fn login(
     State(db): State<DatabaseConnection>,
     Json(login_creds): Json<RequestUserLoginCred>,
-) -> Result<Json<ResponseUserData>, AppError> {
+) -> Result<Json<AuthenticationResponseData>, AppError> {
     let (use_exitence, user_model) = check_user_existence(&db, &login_creds.email).await?;
 
     if !use_exitence {
@@ -70,6 +70,6 @@ pub async fn login(
         ));
     } else {
         let token = create_token(&login_creds.email)?;
-        return Ok(Json(ResponseUserData { token }));
+        return Ok(Json(AuthenticationResponseData { token }));
     }
 }
