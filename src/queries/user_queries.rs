@@ -25,7 +25,11 @@ pub async fn check_user_existence(
         })?;
 
     if let Some(user) = user {
-        return Ok((true, Some(user)));
+        if !user.is_deleted {
+            return Ok((true, Some(user)));
+        } else {
+            return Ok((true, None));
+        }
     } else {
         return Ok((false, None));
     }

@@ -2,15 +2,15 @@ use axum::http::StatusCode;
 use chrono::Duration;
 
 use dotenvy_macro::dotenv;
-use jsonwebtoken::{encode, EncodingKey, Header};
+use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation};
 use serde::{Deserialize, Serialize};
 
 use super::app_error::AppError;
 
 #[derive(Serialize, Deserialize)]
-struct Claims {
+pub struct Claims {
     exp: usize,
-    email: String,
+    pub email: String,
 }
 
 pub fn create_token(email: &String) -> Result<String, AppError> {
@@ -28,4 +28,22 @@ pub fn create_token(email: &String) -> Result<String, AppError> {
         eprintln!("Error creating token: {:?}", error);
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Internal server error")
     })
+}
+
+pub fn validate_token(token: &str) -> Result<TokenData<Claims>, AppError> {
+    let secret_key = dotenv!("SECRET_KEY")
+        .parse::<String>()
+        .expect("Secret key must be a strig");
+    let key = DecodingKey::from_secret(secret_key.as_bytes());
+    let validation = Validation::new(jsonwebtoken::Algorithm::HS256);
+    decode::<Claims>(token, &key, &validation)
+        .map_err(|error| match error.kind() {
+            jsonwebtoken::errors::ErrorKind::InvalidToken
+            | jsonwebtoken::errors::ErrorKind::InvalidSignature
+            | jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
+                AppError::new(StatusCode::UNAUTHORIZED, "not authenticated".to_owned())
+            }
+            _ => AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "error validating token"),
+        })
+        .map(|claim| claim)
 }
