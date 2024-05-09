@@ -13,7 +13,7 @@ pub struct RequestUserData {
 }
 
 #[derive(Serialize)]
-pub struct ResponseUserData {
+pub struct AuthenticationResponseData {
     token: String,
 }
 
@@ -24,7 +24,7 @@ pub struct RequestUserLoginCred {
 }
 
 #[derive(Serialize)]
-pub struct ResponseusersData {
+pub struct ResponseUserData {
     first_name: String,
     last_name: String,
     email: String,
