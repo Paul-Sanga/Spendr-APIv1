@@ -56,21 +56,23 @@ pub async fn login(
             "invalid login credentials".to_owned(),
         ));
     }
-    let mut id: i32 = 0;
-    let valid_password = if let Some(user_model) = user_model {
-        id = user_model.id;
-        verify_password(login_creds.password, user_model.password)?
+
+    let mut _id: i32 = 0;
+    let mut _valid_password = false;
+    if let Some(user_model) = user_model {
+        _id = user_model.id;
+        _valid_password = verify_password(login_creds.password, user_model.password)?;
     } else {
-        false
+        return Err(AppError::new(StatusCode::CONFLICT, "Account deleted"));
     };
 
-    if !valid_password {
+    if !_valid_password {
         return Err(AppError::new(
             StatusCode::BAD_REQUEST,
             "invalid login credentials".to_owned(),
         ));
     } else {
-        let token = create_token(&login_creds.email, id)?;
+        let token = create_token(&login_creds.email, _id)?;
         return Ok(Json(AuthenticationResponseData { token }));
     }
 }
