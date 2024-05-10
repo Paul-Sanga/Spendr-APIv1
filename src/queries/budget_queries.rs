@@ -1,7 +1,14 @@
 use axum::http::StatusCode;
-use sea_orm::{ActiveModelTrait, DatabaseConnection, Set};
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
 
-use crate::{database::budget, routes::budget::RequestBudgetData, utilities::app_error::AppError};
+use crate::{
+    database::{
+        budget::{self, Model},
+        prelude::Budget,
+    },
+    routes::budget::RequestBudgetData,
+    utilities::app_error::AppError,
+};
 
 pub async fn create_budget_query(
     db: &DatabaseConnection,
@@ -23,4 +30,19 @@ pub async fn create_budget_query(
             "internal server error",
         ));
     }
+}
+
+pub async fn get_budget_query(
+    db: &DatabaseConnection,
+    user_id: i32,
+) -> Result<Vec<Model>, AppError> {
+    let budget = Budget::find()
+        .filter(budget::Column::UserId.eq(user_id))
+        .all(db)
+        .await
+        .map_err(|error| {
+            eprintln!("\x1b[31m error fetching user budget {:?}\x1b[0m", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "internal server")
+        })?;
+    Ok(budget)
 }

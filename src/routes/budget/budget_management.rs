@@ -1,7 +1,11 @@
 use axum::{extract::State, http::StatusCode, Extension, Json};
 use sea_orm::{DatabaseConnection, TryIntoModel};
 
-use crate::{queries::budget_queries::create_budget_query, utilities::app_error::AppError};
+use crate::{
+    database::budget,
+    queries::budget_queries::{create_budget_query, get_budget_query},
+    utilities::app_error::AppError,
+};
 
 use super::{RequestBudgetData, ResponseBudgetData};
 
@@ -26,4 +30,22 @@ pub async fn create_budget(
         created_at: saved_budget.created_at,
     };
     Ok(Json(response))
+}
+
+#[axum::debug_handler]
+pub async fn get_budget(
+    State(db): State<DatabaseConnection>,
+    Extension(user_id): Extension<i32>,
+) -> Result<Json<Vec<ResponseBudgetData>>, AppError> {
+    let budget = get_budget_query(&db, user_id).await?;
+
+    let mut response_budget: Vec<ResponseBudgetData> = vec![];
+    for entry in budget {
+        response_budget.push(ResponseBudgetData {
+            category: entry.category,
+            amount: entry.amount,
+            created_at: entry.created_at,
+        })
+    }
+    Ok(Json(response_budget))
 }
