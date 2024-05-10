@@ -3,7 +3,7 @@ pub mod users;
 use axum::{
     http::{header::CONTENT_TYPE, Method},
     middleware,
-    routing::{get, post, put},
+    routing::{delete, get, post, put},
     Router,
 };
 use tower_http::{
@@ -13,7 +13,7 @@ use tower_http::{
 
 use self::users::{
     authectication::{login, register_user},
-    user_management::{get_user_by_id, get_users, update_user},
+    user_management::{delete_user, get_user_by_id, get_users, update_user},
 };
 use crate::{app_state::AppState, middleware::auth_middleware::require_authentication};
 
@@ -39,6 +39,7 @@ pub fn create_routes(state: AppState) -> Router {
         .route("/api/v1/users", get(get_users))
         .route("/api/v1/users/:id", get(get_user_by_id))
         .route("/api/v1/users/:id", put(update_user))
+        .route("/api/v1/users/:id", delete(delete_user))
         .route_layer(middleware::from_fn_with_state(
             state.clone(),
             require_authentication,

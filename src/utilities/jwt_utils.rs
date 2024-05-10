@@ -7,20 +7,21 @@ use serde::{Deserialize, Serialize};
 
 use super::app_error::AppError;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Claims {
     exp: usize,
     pub email: String,
+    pub id: i32,
 }
 
-pub fn create_token(email: &String) -> Result<String, AppError> {
+pub fn create_token(email: &String, id: i32) -> Result<String, AppError> {
     let secret_key = dotenv!("SECRET_KEY")
         .parse::<String>()
         .expect("Secret key must be a strig");
     let email = String::from(email);
     let expires_at = chrono::Utc::now() + Duration::hours(1);
     let exp = expires_at.timestamp() as usize;
-    let claims = Claims { exp, email };
+    let claims = Claims { exp, email, id };
     let token_header = Header::default();
     let key = EncodingKey::from_secret(secret_key.as_bytes());
 

@@ -6,7 +6,9 @@ use axum::{
 use sea_orm::DatabaseConnection;
 
 use crate::{
-    queries::user_queries::{get_user_by_id_query, get_users_query, update_user_query},
+    queries::user_queries::{
+        delete_user_query, get_user_by_id_query, get_users_query, update_user_query,
+    },
     utilities::app_error::AppError,
 };
 
@@ -44,6 +46,7 @@ pub async fn get_user_by_id(
     }
 }
 
+#[axum::debug_handler]
 pub async fn update_user(
     Path(id): Path<i32>,
     State(db): State<DatabaseConnection>,
@@ -52,6 +55,18 @@ pub async fn update_user(
     update_user_query(&db, id, user_data).await?;
     let response = MessageResponse {
         message: "Update Successful".to_owned(),
+    };
+    Ok(Json(response))
+}
+
+#[axum::debug_handler]
+pub async fn delete_user(
+    State(db): State<DatabaseConnection>,
+    Path(id): Path<i32>,
+) -> Result<Json<MessageResponse>, AppError> {
+    delete_user_query(&db, id).await?;
+    let response = MessageResponse {
+        message: "Delete Successful".to_owned(),
     };
     Ok(Json(response))
 }

@@ -19,7 +19,7 @@ pub async fn register_user(
         ..Default::default()
     };
 
-    let (user_existence, _) = check_user_existence(&db, &request_user.email).await?;
+    let (user_existence, user_model) = check_user_existence(&db, &request_user.email).await?;
 
     if user_existence {
         return Err(AppError::new(
@@ -27,7 +27,7 @@ pub async fn register_user(
             "User email is already registered".to_owned(),
         ));
     } else {
-        let token = create_token(&request_user.email)?;
+        let token = create_token(&request_user.email, user_model.unwrap().id)?;
         new_user.first_name = Set(request_user.first_name);
         new_user.last_name = Set(request_user.last_name);
         new_user.email = Set(request_user.email);
@@ -57,19 +57,22 @@ pub async fn login(
         ));
     }
 
-    let valid_password = if let Some(user_model) = user_model {
-        verify_password(login_creds.password, user_model.password)?
+    let mut _id: i32 = 0;
+    let mut _valid_password = false;
+    if let Some(user_model) = user_model {
+        _id = user_model.id;
+        _valid_password = verify_password(login_creds.password, user_model.password)?;
     } else {
-        false
+        return Err(AppError::new(StatusCode::CONFLICT, "Account deleted"));
     };
 
-    if !valid_password {
+    if !_valid_password {
         return Err(AppError::new(
             StatusCode::BAD_REQUEST,
             "invalid login credentials".to_owned(),
         ));
     } else {
-        let token = create_token(&login_creds.email)?;
+        let token = create_token(&login_creds.email, _id)?;
         return Ok(Json(AuthenticationResponseData { token }));
     }
 }
