@@ -34,6 +34,7 @@ pub async fn require_authentication(
     if user_exitence {
         if let Some(user_model) = user_model {
             request.extensions_mut().insert(user_model.email);
+            request.extensions_mut().insert(token_data.claims.id);
             return Ok(next.run(request).await);
         } else {
             return Err(AppError::new(
