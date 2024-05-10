@@ -101,3 +101,25 @@ pub async fn update_user_query(
         ));
     }
 }
+
+pub async fn delete_user_query(db: &DatabaseConnection, id: i32) -> Result<(), AppError> {
+    let user = Users::find()
+        .filter(users::Column::Id.eq(id))
+        .one(db)
+        .await
+        .map_err(|error| {
+            eprintln!("\x1b[31m Error fetching user by id: {:?} \x1b[0m", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+        })?;
+
+    let mut user_model: users::ActiveModel = user.unwrap().into();
+    user_model.is_deleted = Set(true);
+    if let Ok(_saved_user) = user_model.save(db).await {
+        return Ok(());
+    } else {
+        return Err(AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "internal server error",
+        ));
+    }
+}
