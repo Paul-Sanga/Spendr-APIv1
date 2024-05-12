@@ -11,9 +11,10 @@ impl MigrationTrait for Migration {
             "
                 CREATE TABLE IF NOT EXISTS budget(
                     id SERIAL PRIMARY KEY,
-                    user_id INTEGER REFERENCES users(id) NOT NULL,
+                    user_id INTEGER  NOT NULL REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
                     category VARCHAR NOT NULL,
-                    amount DECIMAL NOT NULL,
+                    amount_budgeted NUMERIC NOT NULL,
+                    amount_spent NUMERIC NOT NULL,
                     created_at TIMESTAMP NOT NULL DEFAULT (TIMEZONE('utc', now())),
                     updated_at TIMESTAMP
                 )

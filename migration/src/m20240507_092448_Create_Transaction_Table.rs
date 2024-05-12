@@ -9,12 +9,12 @@ impl MigrationTrait for Migration {
         let db = manager.get_connection();
         db.execute_unprepared(
             "
-            CREATE TYPE IF NOT EXISTS expense_type AS ENUM ('income', 'expense');
+            CREATE TYPE expense_type AS ENUM ('income', 'expense');
                 CREATE TABLE IF NOT EXISTS transactions(
                     id SERIAL PRIMARY KEY,
-                    user_id INTEGER REFERENCES users(id) NOT NULL,
-                    amount DECIMAL NOT NULL,
-                    category VARCHAR NOT NULL,
+                    user_id INTEGER  NOT NULL REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                    balance NUMERIC NOT NULL,
+                    category CHARACTER VARYING NOT NULL,
                     type expense_type NOT NULL,
                     date DATE NOT NULL
                 );

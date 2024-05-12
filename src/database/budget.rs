@@ -9,7 +9,8 @@ pub struct Model {
     pub id: i32,
     pub user_id: i32,
     pub category: String,
-    pub amount: Decimal,
+    pub amount_budgeted: Decimal,
+    pub amount_spent: Decimal,
     pub created_at: DateTime,
     pub updated_at: Option<DateTime>,
 }
@@ -20,8 +21,8 @@ pub enum Relation {
         belongs_to = "super::users::Entity",
         from = "Column::UserId",
         to = "super::users::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
+        on_update = "Cascade",
+        on_delete = "Cascade"
     )]
     Users,
 }

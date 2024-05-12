@@ -2,7 +2,6 @@ use axum::{extract::State, http::StatusCode, Extension, Json};
 use sea_orm::{DatabaseConnection, TryIntoModel};
 
 use crate::{
-    database::budget,
     queries::budget_queries::{create_budget_query, get_budget_query},
     utilities::app_error::AppError,
 };
@@ -26,7 +25,8 @@ pub async fn create_budget(
     };
     let response = ResponseBudgetData {
         category: saved_budget.category,
-        amount: saved_budget.amount,
+        amount_spent: saved_budget.amount_spent,
+        amount_budgeted: saved_budget.amount_budgeted,
         created_at: saved_budget.created_at,
     };
     Ok(Json(response))
@@ -43,7 +43,8 @@ pub async fn get_budget(
     for entry in budget {
         response_budget.push(ResponseBudgetData {
             category: entry.category,
-            amount: entry.amount,
+            amount_budgeted: entry.amount_budgeted,
+            amount_spent: entry.amount_spent,
             created_at: entry.created_at,
         })
     }
