@@ -12,10 +12,12 @@ pub struct Model {
     pub first_name: String,
     pub last_name: String,
     pub password: String,
+    pub enable_tips: Option<bool>,
     pub is_verified: bool,
     pub is_deleted: bool,
     pub created_at: DateTime,
     pub updated_at: Option<DateTime>,
+    pub account_activation_date: Option<DateTime>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

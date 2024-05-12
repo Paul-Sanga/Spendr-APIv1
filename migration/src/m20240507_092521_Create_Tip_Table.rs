@@ -11,7 +11,7 @@ impl MigrationTrait for Migration {
             "
                 CREATE TABLE IF NOT EXISTS tip(
                     id SERIAL PRIMARY KEY,
-                    user_id INTEGER REFERENCES users(id) NOT NULL,
+                    user_id INTEGER NOT NULL REFERENCES users(id) ON UPDATE CASCADE ON DELETE CASCADE,
                     tip_message TEXT NOT NULL,
                     created_at TIMESTAMP NOT NULL DEFAULT (TIMEZONE('utc', now()))
                 );

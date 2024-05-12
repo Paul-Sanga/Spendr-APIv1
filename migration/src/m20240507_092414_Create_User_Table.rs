@@ -15,11 +15,13 @@ impl MigrationTrait for Migration {
                     first_name VARCHAR(255) NOT NULL,
                     last_name VARCHAR(255) NOT NULL,
                     password VARCHAR NOT NULL,
+                    enable_tips BOOLEAN DEFAULT FALSE,
                     is_verified BOOLEAN DEFAULT FALSE NOT NULL,
                     is_deleted BOOLEAN DEFAULT FALSE NOT NULL,
                     created_at TIMESTAMP DEFAULT (TIMEZONE('utc', now())) NOT NULL,
-                    updated_at TIMESTAMP
-                )
+                    updated_at TIMESTAMP,
+                    account_activation_date TIMESTAMP WITHOUT TIME ZONE NULL
+                );
             "
         )
         .await?;

@@ -18,7 +18,8 @@ pub async fn create_budget_query(
     let budget_model = budget::ActiveModel {
         user_id: Set(user_id),
         category: Set(budget_data.category),
-        amount: Set(budget_data.amount),
+        amount_budgeted: Set(budget_data.amount_budgeted),
+        amount_spent: Set(budget_data.amount_spent),
         ..Default::default()
     };
     if let Ok(saved_budget) = budget_model.save(db).await {
@@ -45,4 +46,12 @@ pub async fn get_budget_query(
             AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "internal server")
         })?;
     Ok(budget)
+}
+
+pub async fn update_budget_query(
+    db: &DatabaseConnection,
+    user_id: i32,
+    budget_id: i32,
+) -> Result<(), AppError> {
+    todo!();
 }

@@ -10,12 +10,14 @@ pub mod budget_management;
 #[derive(Deserialize)]
 pub struct RequestBudgetData {
     pub category: String,
-    pub amount: Decimal,
+    pub amount_budgeted: Decimal,
+    pub amount_spent: Decimal,
 }
 
 #[derive(Serialize)]
 pub struct ResponseBudgetData {
     category: String,
-    amount: Decimal,
+    amount_budgeted: Decimal,
+    amount_spent: Decimal,
     created_at: NaiveDateTime,
 }

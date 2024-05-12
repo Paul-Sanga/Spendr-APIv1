@@ -9,7 +9,7 @@ use crate::{
     },
 };
 use axum::{extract::State, http::StatusCode, Json};
-use sea_orm::{ActiveModelTrait, DatabaseConnection, Set};
+use sea_orm::{ActiveModelTrait, DatabaseConnection, Set, TryIntoModel};
 
 pub async fn register_user(
     State(db): State<DatabaseConnection>,
@@ -19,7 +19,7 @@ pub async fn register_user(
         ..Default::default()
     };
 
-    let (user_existence, user_model) = check_user_existence(&db, &request_user.email).await?;
+    let (user_existence, _) = check_user_existence(&db, &request_user.email).await?;
 
     if user_existence {
         return Err(AppError::new(
@@ -27,13 +27,14 @@ pub async fn register_user(
             "User email is already registered".to_owned(),
         ));
     } else {
-        let token = create_token(&request_user.email, user_model.unwrap().id)?;
         new_user.first_name = Set(request_user.first_name);
         new_user.last_name = Set(request_user.last_name);
         new_user.email = Set(request_user.email);
         new_user.password = Set(hash_password(request_user.password)?);
 
-        if let Ok(_) = new_user.save(&db).await {
+        if let Ok(user_model) = new_user.save(&db).await {
+            let user_model = user_model.try_into_model().unwrap();
+            let token = create_token(&user_model.email, user_model.id)?;
             Ok(Json(AuthenticationResponseData { token }))
         } else {
             return Err(AppError::new(
