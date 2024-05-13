@@ -22,8 +22,6 @@ pub struct UpdateUserData {
     pub first_name: Option<String>,
 }
 
-
-
 #[derive(Serialize)]
 pub struct AuthenticationResponseData {
     token: String,

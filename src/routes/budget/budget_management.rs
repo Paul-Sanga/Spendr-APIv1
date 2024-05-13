@@ -6,7 +6,9 @@ use axum::{
 use sea_orm::{DatabaseConnection, TryIntoModel};
 
 use crate::{
-    queries::budget_queries::{create_budget_query, get_budget_query, update_budget_query},
+    queries::budget_queries::{
+        create_budget_query, delete_budget_query, get_budget_query, update_budget_query,
+    },
     utilities::{app_error::AppError, MessageResponse},
 };
 
@@ -63,6 +65,21 @@ pub async fn update_budget(
     Json(budget_data): Json<RequestUpdateBudgetData>,
 ) -> Result<Json<MessageResponse>, AppError> {
     let _budget_model = update_budget_query(&db, user_id, budget_id, budget_data).await?;
-    let response = MessageResponse {message: "Update successful".to_owned()};
+    let response = MessageResponse {
+        message: "Update successful".to_owned(),
+    };
+    Ok(Json(response))
+}
+
+#[axum::debug_handler]
+pub async fn delete_budget(
+    State(db): State<DatabaseConnection>,
+    Extension(user_id): Extension<i32>,
+    Path(budget_id): Path<i32>,
+) -> Result<Json<MessageResponse>, AppError> {
+    let _deleted_budget = delete_budget_query(&db, budget_id, user_id).await?;
+    let response = MessageResponse {
+        message: "delete successful".to_owned(),
+    };
     Ok(Json(response))
 }
