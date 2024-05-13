@@ -13,7 +13,7 @@ use tower_http::{
 };
 
 use self::{
-    budget::budget_management::{create_budget, get_budget, update_budget},
+    budget::budget_management::{create_budget, delete_budget, get_budget, update_budget},
     users::{
         authectication::{login, register_user},
         user_management::{delete_user, get_user_by_id, get_users, update_user},
@@ -48,6 +48,7 @@ pub fn create_routes(state: AppState) -> Router {
         .route("/api/v1/budget", post(create_budget))
         .route("/api/v1/budget", get(get_budget))
         .route("/api/v1/budget", put(update_budget))
+        .route("/api/v1/budget", delete(delete_budget))
         .route_layer(middleware::from_fn_with_state(
             state.clone(),
             require_authentication,
