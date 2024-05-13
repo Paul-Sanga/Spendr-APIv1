@@ -53,5 +53,19 @@ pub async fn update_budget_query(
     user_id: i32,
     budget_id: i32,
 ) -> Result<(), AppError> {
+    let budget_model = Budget::find()
+        .filter(budget::Column::Id.eq(budget_id))
+        .one(db)
+        .await
+        .map_err(|error| {
+            eprint!("\x1b[31m error geting budget by id: {:?} \x1b[0m", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "internal server error");
+        });
+    if let Ok(budget_model) = budget_model {
+        let budget_model: budget::ActiveModel = budget_model.unwrap().into();
+    } else {
+        AppError::new(StatusCode::NOT_FOUND, "invalid budget id");
+    }
+
     todo!();
 }

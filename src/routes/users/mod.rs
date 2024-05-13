@@ -12,11 +12,14 @@ pub struct RequestUserData {
     first_name: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct UpdateUserData {
-    pub email: String,
-    pub last_name: String,
-    pub first_name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub email: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub first_name: Option<String>,
 }
 
 #[derive(Serialize)]
