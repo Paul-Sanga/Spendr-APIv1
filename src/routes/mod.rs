@@ -46,6 +46,7 @@ pub fn create_routes(state: AppState) -> Router {
         .route("/api/v1/users/:id", put(update_user))
         .route("/api/v1/users/:id", delete(delete_user))
         .route("/api/v1/budget", post(create_budget))
+        .route("/api/v1/budget/:id", get(get_user_by_id))
         .route("/api/v1/budget", get(get_budget))
         .route("/api/v1/budget", put(update_budget))
         .route("/api/v1/budget", delete(delete_budget))
