@@ -22,10 +22,7 @@ pub struct UpdateUserData {
     pub first_name: Option<String>,
 }
 
-#[derive(Serialize)]
-pub struct MessageResponse {
-    message: String,
-}
+
 
 #[derive(Serialize)]
 pub struct AuthenticationResponseData {
