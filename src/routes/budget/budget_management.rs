@@ -6,8 +6,10 @@ use axum::{
 use sea_orm::{DatabaseConnection, TryIntoModel};
 
 use crate::{
+    database::budget,
     queries::budget_queries::{
-        create_budget_query, delete_budget_query, get_budget_query, update_budget_query,
+        create_budget_query, delete_budget_query, get_budget_by_id_query, get_budget_query,
+        update_budget_query,
     },
     utilities::{app_error::AppError, MessageResponse},
 };
@@ -55,6 +57,22 @@ pub async fn get_budget(
         })
     }
     Ok(Json(response_budget))
+}
+
+#[axum::debug_handler]
+pub async fn get_budget_by_id(
+    State(db): State<DatabaseConnection>,
+    Path(budget_id): Path<i32>,
+    Extension(user_id): Extension<i32>,
+) -> Result<Json<ResponseBudgetData>, AppError> {
+    let budget_model = get_budget_by_id_query(&db, budget_id, user_id).await?;
+    let response = ResponseBudgetData {
+        category: budget_model.category,
+        amount_budgeted: budget_model.amount_budgeted,
+        amount_spent: budget_model.amount_spent,
+        created_at: budget_model.created_at,
+    };
+    Ok(Json(response))
 }
 
 #[axum::debug_handler]
