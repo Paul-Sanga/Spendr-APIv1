@@ -78,10 +78,10 @@ pub async fn update_user_query(
     if let Some(email) = user_data.email {
         user_model.email = Set(email)
     }
-    if let Some(last_name) = user_data.last_name{
+    if let Some(last_name) = user_data.last_name {
         user_model.last_name = Set(last_name);
     }
-    if let Some(first_name) = user_data.first_name{
+    if let Some(first_name) = user_data.first_name {
         user_model.first_name = Set(first_name);
     }
     user_model.updated_at = Set(Some(chrono::Utc::now().naive_utc()));

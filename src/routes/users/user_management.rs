@@ -9,10 +9,10 @@ use crate::{
     queries::user_queries::{
         delete_user_query, get_user_by_id_query, get_users_query, update_user_query,
     },
-    utilities::app_error::AppError,
+    utilities::{app_error::AppError, MessageResponse},
 };
 
-use super::{MessageResponse, ResponseUserData, UpdateUserData};
+use super::{ResponseUserData, UpdateUserData};
 
 pub async fn get_users(
     State(db): State<DatabaseConnection>,

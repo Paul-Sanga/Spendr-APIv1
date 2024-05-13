@@ -21,3 +21,13 @@ pub struct ResponseBudgetData {
     amount_spent: Decimal,
     created_at: NaiveDateTime,
 }
+
+#[derive(Deserialize)]
+pub struct RequestUpdateBudgetData {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub category: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub amount_budgeted: Option<Decimal>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub amount_spent: Option<Decimal>,
+}
