@@ -3,7 +3,6 @@
 pub mod prelude;
 
 pub mod budget;
-pub mod sea_orm_active_enums;
 pub mod tip;
 pub mod transactions;
 pub mod users;

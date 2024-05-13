@@ -16,6 +16,7 @@ pub struct RequestBudgetData {
 
 #[derive(Serialize)]
 pub struct ResponseBudgetData {
+    id: i32,
     category: String,
     amount_budgeted: Decimal,
     amount_spent: Decimal,
