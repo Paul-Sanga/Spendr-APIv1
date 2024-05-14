@@ -1,7 +1,7 @@
-use axum::{http::StatusCode, Json};
+use axum::http::StatusCode;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
-    QueryFilter, Set,
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, DeleteResult, EntityTrait,
+    IntoActiveModel, ModelTrait, QueryFilter, Set,
 };
 
 use crate::{
@@ -85,6 +85,22 @@ pub async fn update_tip_query(
     }
     if let Ok(tip_model) = tip_model.save(db).await {
         return Ok(tip_model);
+    } else {
+        return Err(AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "internal server error",
+        ));
+    }
+}
+
+pub async fn delete_tip_query(
+    db: &DatabaseConnection,
+    user_id: i32,
+    tip_id: i32,
+) -> Result<DeleteResult, AppError> {
+    let tip_model = get_tip_by_id_query(db, user_id, tip_id).await?;
+    if let Ok(delete_result) = tip_model.delete(db).await {
+        return Ok(delete_result);
     } else {
         return Err(AppError::new(
             StatusCode::INTERNAL_SERVER_ERROR,

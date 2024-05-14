@@ -8,7 +8,7 @@ use sea_orm::DatabaseConnection;
 use crate::{
     database::tip,
     queries::tip_queries::{
-        create_tip_query, get_tip_by_id_query, get_tips_query, update_tip_query,
+        create_tip_query, delete_tip_query, get_tip_by_id_query, get_tips_query, update_tip_query
     },
     utilities::{app_error::AppError, MessageResponse},
 };
@@ -75,5 +75,12 @@ pub async fn update_tip(
     let response_message = MessageResponse {
         message: "Update Successful".to_owned(),
     };
+    Ok(Json(response_message))
+}
+
+#[axum::debug_handler]
+pub async fn delete_tip(State(db): State<DatabaseConnection>, Extension(user_id): Extension<i32>, Path(tip_id): Path<i32>)->Result<Json<MessageResponse>, AppError>{
+    let _delete_result = delete_tip_query(&db, user_id, tip_id).await?;
+    let response_message = MessageResponse{message: "Delete Successful".to_owned()};
     Ok(Json(response_message))
 }
