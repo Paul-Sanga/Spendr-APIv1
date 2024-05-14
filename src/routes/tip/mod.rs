@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Deserialize)]
 pub struct TipData {
     pub tip_message: String,
-    pub created_at: NaiveDateTime,
 }
 
 #[derive(Serialize)]
