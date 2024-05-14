@@ -14,3 +14,9 @@ pub struct TipResponseData {
     pub tip_message: String,
     pub created_at: NaiveDateTime,
 }
+
+#[derive(Deserialize)]
+pub struct TipUpdateData {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tip_message: Option<String>,
+}
