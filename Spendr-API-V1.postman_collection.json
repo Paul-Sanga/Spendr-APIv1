@@ -1,0 +1,543 @@
+{
+	"info": {
+		"_postman_id": "93e530bc-5659-4ee9-af57-d4f6045acf30",
+		"name": "Spendr-API-V1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29563940"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "User Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"phantom@gmail.com\",\r\n    \"password\": \"pajoy9903\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/auth/login",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Registration",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"paul@gmail.com\",\r\n    \"first_name\": \"paul\",\r\n    \"last_name\": \"sanga\",\r\n    \"password\": \"pajoy9903\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/auth/register",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Restore User Account",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"paul@gmail.com\",\r\n    \"password\": \"Test12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/auth/restore",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"auth",
+								"restore"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Budget Management",
+			"item": [
+				{
+					"name": "Create Budget",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU2MDE3MjUsImVtYWlsIjoicGhhbnRvbUBnbWFpbC5jb20iLCJpZCI6MX0.MQ2fcBPh6lJ7YJ9HHU_vvnmQ1SkVz3VrH1HQ0BhpPlc"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"category\": \"Housing\",\r\n    \"amount_budgeted\": 13000.00,\r\n    \"amount_spent\": 1500.00\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/budget",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"budget"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Budget",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU2MDE3MjUsImVtYWlsIjoicGhhbnRvbUBnbWFpbC5jb20iLCJpZCI6MX0.MQ2fcBPh6lJ7YJ9HHU_vvnmQ1SkVz3VrH1HQ0BhpPlc"
+							}
+						],
+						"url": {
+							"raw": "{{BaseURL}}/budget",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"budget"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Budget By Id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU2MDAxMjQsImVtYWlsIjoicGhhbnRvbUBnbWFpbC5jb20iLCJpZCI6MX0.bQAy4Mw0sHk_xlwV3868PCyTm_S2Bl5LluJTYp-9QiM"
+							}
+						],
+						"url": {
+							"raw": "{{BaseURL}}/budget/3",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"budget",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Budget",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU2MDE3MjUsImVtYWlsIjoicGhhbnRvbUBnbWFpbC5jb20iLCJpZCI6MX0.MQ2fcBPh6lJ7YJ9HHU_vvnmQ1SkVz3VrH1HQ0BhpPlc"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"category\": \"Home Expense\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/budget/3",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"budget",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Budget",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU2MDE3MjUsImVtYWlsIjoicGhhbnRvbUBnbWFpbC5jb20iLCJpZCI6MX0.MQ2fcBPh6lJ7YJ9HHU_vvnmQ1SkVz3VrH1HQ0BhpPlc"
+							}
+						],
+						"url": {
+							"raw": "{{BaseURL}}/budget/1",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"budget",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Get Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU1ODczMjQsImVtYWlsIjoicGhhbnRvbUBnbWFpbC5jb20iLCJpZCI6MX0.4b8S6UyEZoh5wCRJYoHLwDPpKcRoj35ZbXvQA0xDUwo"
+							}
+						],
+						"url": {
+							"raw": "{{BaseURL}}/users",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By Id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU1ODczMjQsImVtYWlsIjoicGhhbnRvbUBnbWFpbC5jb20iLCJpZCI6MX0.4b8S6UyEZoh5wCRJYoHLwDPpKcRoj35ZbXvQA0xDUwo"
+							}
+						],
+						"url": {
+							"raw": "{{BaseURL}}/users/2",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateUser",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU1ODkyMzcsImVtYWlsIjoicGhhbnRvbUBnbWFpbC5jb20iLCJpZCI6MX0.i-Yx7W1iWWrppscCEpQrG1JTVv3xIuU1WRvTx3_265s"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\": \"paul\",\r\n    \"last_name\": \"sanga\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/users/2",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU1ODkyMzcsImVtYWlsIjoicGhhbnRvbUBnbWFpbC5jb20iLCJpZCI6MX0.i-Yx7W1iWWrppscCEpQrG1JTVv3xIuU1WRvTx3_265s"
+							}
+						],
+						"url": {
+							"raw": "{{BaseURL}}/users/2",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "Create Transaction",
+					"request": {
+						"method": "POST",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction By Id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Update Transaction",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU2NzIwOTEsImVtYWlsIjoicGhhbnRvbUBnbWFpbC5jb20iLCJpZCI6Mn0.RJRmWVi37daOYyzJ2MLykbJLPN6y2D45MMu6XHBPL_Q"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"balance\": \"50000\",\r\n    \"category\": \"Home Expense\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}//transactions/1",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"",
+								"transactions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Transaction",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU2NzIwOTEsImVtYWlsIjoicGhhbnRvbUBnbWFpbC5jb20iLCJpZCI6Mn0.RJRmWVi37daOYyzJ2MLykbJLPN6y2D45MMu6XHBPL_Q"
+							}
+						],
+						"url": {
+							"raw": "{{BaseURL}}/transactions/3",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"transactions",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tip Management",
+			"item": [
+				{
+					"name": "Create Tip",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU2ODkyNzQsImVtYWlsIjoicGF1bEBnbWFpbC5jb20iLCJpZCI6M30.Ia62ZY71_TXs5hP2aGxMKaM0ZPGQDirU5NkizNkOcq4"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tip_message\": \"This is a great tip\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/tip",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"tip"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tips",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU2ODkyNzQsImVtYWlsIjoicGF1bEBnbWFpbC5jb20iLCJpZCI6M30.Ia62ZY71_TXs5hP2aGxMKaM0ZPGQDirU5NkizNkOcq4"
+							}
+						],
+						"url": {
+							"raw": "{{BaseURL}}/tip",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"tip"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tip By Id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Update Tip",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU2ODkyNzQsImVtYWlsIjoicGF1bEBnbWFpbC5jb20iLCJpZCI6M30.Ia62ZY71_TXs5hP2aGxMKaM0ZPGQDirU5NkizNkOcq4"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tip_message\": \"This is a better tip\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/tip/1",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"tip",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Tip",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-auth-token",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTU2ODkyNzQsImVtYWlsIjoicGF1bEBnbWFpbC5jb20iLCJpZCI6M30.Ia62ZY71_TXs5hP2aGxMKaM0ZPGQDirU5NkizNkOcq4"
+							}
+						],
+						"url": {
+							"raw": "{{BaseURL}}/tip/1",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"tip",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
