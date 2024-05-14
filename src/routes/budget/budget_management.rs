@@ -6,7 +6,6 @@ use axum::{
 use sea_orm::{DatabaseConnection, TryIntoModel};
 
 use crate::{
-    database::budget,
     queries::budget_queries::{
         create_budget_query, delete_budget_query, get_budget_by_id_query, get_budget_query,
         update_budget_query,
@@ -32,6 +31,7 @@ pub async fn create_budget(
         ));
     };
     let response = ResponseBudgetData {
+        id: saved_budget.id,
         category: saved_budget.category,
         amount_spent: saved_budget.amount_spent,
         amount_budgeted: saved_budget.amount_budgeted,
@@ -50,6 +50,7 @@ pub async fn get_budget(
     let mut response_budget: Vec<ResponseBudgetData> = vec![];
     for entry in budget {
         response_budget.push(ResponseBudgetData {
+            id: entry.id,
             category: entry.category,
             amount_budgeted: entry.amount_budgeted,
             amount_spent: entry.amount_spent,
@@ -65,8 +66,10 @@ pub async fn get_budget_by_id(
     Path(budget_id): Path<i32>,
     Extension(user_id): Extension<i32>,
 ) -> Result<Json<ResponseBudgetData>, AppError> {
+    println!("\x1b[32m reached here \x1b[0m");
     let budget_model = get_budget_by_id_query(&db, budget_id, user_id).await?;
     let response = ResponseBudgetData {
+        id: budget_model.id,
         category: budget_model.category,
         amount_budgeted: budget_model.amount_budgeted,
         amount_spent: budget_model.amount_spent,
