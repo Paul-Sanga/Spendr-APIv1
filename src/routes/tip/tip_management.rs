@@ -1,12 +1,10 @@
 use axum::{
     extract::{Path, State},
-    response::Response,
     Extension, Json,
 };
 use sea_orm::DatabaseConnection;
 
 use crate::{
-    database::tip,
     queries::tip_queries::{
         create_tip_query, delete_tip_query, get_tip_by_id_query, get_tips_query, update_tip_query,
     },

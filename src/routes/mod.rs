@@ -24,7 +24,7 @@ use self::{
         update_transaction,
     },
     users::{
-        authectication::{login, register_user},
+        authectication::{login, register_user, restore_user_account},
         user_management::{delete_user, get_user_by_id, get_users, update_user},
     },
 };
@@ -75,6 +75,7 @@ pub fn create_routes(state: AppState) -> Router {
         ))
         .route("/api/v1/auth/register", post(register_user))
         .route("/api/v1/auth/login", post(login))
+        .route("/api/v1/auth/restore", post(restore_user_account))
         .layer(cors)
         .layer(tracing_layer)
         .with_state(state)

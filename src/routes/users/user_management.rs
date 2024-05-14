@@ -18,14 +18,14 @@ pub async fn get_users(
     State(db): State<DatabaseConnection>,
 ) -> Result<Json<Vec<ResponseUserData>>, AppError> {
     let users = get_users_query(&db).await?;
-    let mut user_data: Vec<ResponseUserData> = vec![];
-    for user in users {
-        user_data.push(ResponseUserData {
-            first_name: user.first_name,
-            last_name: user.last_name,
-            email: user.email,
+    let user_data: Vec<ResponseUserData> = users
+        .into_iter()
+        .map(|entry| ResponseUserData {
+            first_name: entry.first_name,
+            last_name: entry.last_name,
+            email: entry.email,
         })
-    }
+        .collect();
     Ok(Json(user_data))
 }
 

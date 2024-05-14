@@ -6,10 +6,10 @@ pub mod user_management;
 
 #[derive(Deserialize)]
 pub struct RequestUserData {
-    email: String,
-    password: String,
-    last_name: String,
-    first_name: String,
+    pub email: String,
+    pub password: String,
+    pub last_name: String,
+    pub first_name: String,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -24,13 +24,16 @@ pub struct UpdateUserData {
 
 #[derive(Serialize)]
 pub struct AuthenticationResponseData {
-    token: String,
+    pub email: String,
+    pub token: String,
+    pub last_name: String,
+    pub first_name: String,
 }
 
 #[derive(Deserialize)]
 pub struct RequestUserLoginCred {
-    email: String,
-    password: String,
+    pub email: String,
+    pub password: String,
 }
 
 #[derive(Serialize)]
