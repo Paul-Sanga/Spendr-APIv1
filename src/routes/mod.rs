@@ -18,7 +18,7 @@ use self::{
     budget::budget_management::{
         create_budget, delete_budget, get_budget, get_budget_by_id, update_budget,
     },
-    tip::tip_management::{create_tip, get_tip_by_id},
+    tip::tip_management::{create_tip, get_tip_by_id, get_tips},
     transactions::transaction_management::{
         create_transaction, delete_transaction, get_transaction_by_id, get_transactions,
         update_transaction,
@@ -65,6 +65,7 @@ pub fn create_routes(state: AppState) -> Router {
         .route("/api/v1/transactions/:id", put(update_transaction))
         .route("/api/v1/transactions/:id", delete(delete_transaction))
         .route("/api/v1/tip", post(create_tip))
+        .route("/api/v1/tip", get(get_tips))
         .route("/api/v1/tip/:id", get(get_tip_by_id))
         .route_layer(middleware::from_fn_with_state(
             state.clone(),

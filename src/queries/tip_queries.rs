@@ -1,11 +1,11 @@
-use axum::http::StatusCode;
+use axum::{http::StatusCode, Json};
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, QueryFilter, Set,
 };
 
 use crate::{
     database::{prelude::Tip, tip},
-    routes::tip::TipData,
+    routes::tip::{TipData, TipResponseData},
     utilities::app_error::AppError,
 };
 
@@ -53,4 +53,16 @@ pub async fn get_tip_by_id_query(
     } else {
         return Err(AppError::new(StatusCode::NOT_FOUND, "invalid tip id"));
     }
+}
+
+pub async fn get_tips_query(db: &DatabaseConnection, user_id: i32)->Result<Vec<tip::Model>, AppError>{
+    let tip_model = Tip::find()
+    .filter(tip::Column::UserId.eq(user_id))
+    .all(db)
+    .await
+    .map_err(|error|{
+        eprintln!("\x1b[31m error geting tips: {:?} \x1b[om", error);
+        AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+    })?;
+    Ok(tip_model)
 }
