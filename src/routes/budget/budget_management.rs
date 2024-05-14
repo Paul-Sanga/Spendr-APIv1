@@ -20,7 +20,7 @@ pub async fn create_budget(
     State(db): State<DatabaseConnection>,
     Extension(user_id): Extension<i32>,
     Json(budget_data): Json<RequestBudgetData>,
-) -> Result<Json<ResponseBudgetData>, AppError> {
+) -> Result<Json<(MessageResponse, ResponseBudgetData)>, AppError> {
     let saved_budget = create_budget_query(&db, user_id, budget_data).await?;
     let saved_budget = if let Ok(saved_budget) = saved_budget.try_into_model() {
         saved_budget
@@ -37,27 +37,33 @@ pub async fn create_budget(
         amount_budgeted: saved_budget.amount_budgeted,
         created_at: saved_budget.created_at,
     };
-    Ok(Json(response))
+    let response_message = MessageResponse {
+        message: "Budget created".to_owned(),
+    };
+    Ok(Json((response_message, response)))
 }
 
 #[axum::debug_handler]
 pub async fn get_budget(
     State(db): State<DatabaseConnection>,
     Extension(user_id): Extension<i32>,
-) -> Result<Json<Vec<ResponseBudgetData>>, AppError> {
-    let budget = get_budget_query(&db, user_id).await?;
+) -> Result<Json<(MessageResponse, Vec<ResponseBudgetData>)>, AppError> {
+    let budget_model = get_budget_query(&db, user_id).await?;
 
-    let mut response_budget: Vec<ResponseBudgetData> = vec![];
-    for entry in budget {
-        response_budget.push(ResponseBudgetData {
+    let response_budget: Vec<ResponseBudgetData> = budget_model
+        .into_iter()
+        .map(|entry| ResponseBudgetData {
             id: entry.id,
             category: entry.category,
             amount_budgeted: entry.amount_budgeted,
             amount_spent: entry.amount_spent,
             created_at: entry.created_at,
         })
-    }
-    Ok(Json(response_budget))
+        .collect();
+    let response_message = MessageResponse {
+        message: "Fetch Successful".to_owned(),
+    };
+    Ok(Json((response_message, response_budget)))
 }
 
 #[axum::debug_handler]
@@ -65,7 +71,7 @@ pub async fn get_budget_by_id(
     State(db): State<DatabaseConnection>,
     Path(budget_id): Path<i32>,
     Extension(user_id): Extension<i32>,
-) -> Result<Json<ResponseBudgetData>, AppError> {
+) -> Result<Json<(MessageResponse, ResponseBudgetData)>, AppError> {
     println!("\x1b[32m reached here \x1b[0m");
     let budget_model = get_budget_by_id_query(&db, budget_id, user_id).await?;
     let response = ResponseBudgetData {
@@ -75,7 +81,10 @@ pub async fn get_budget_by_id(
         amount_spent: budget_model.amount_spent,
         created_at: budget_model.created_at,
     };
-    Ok(Json(response))
+    let response_message = MessageResponse {
+        message: "Fetch Successful".to_owned(),
+    };
+    Ok(Json((response_message, response)))
 }
 
 #[axum::debug_handler]
