@@ -1,4 +1,5 @@
 pub mod budget;
+pub mod tip;
 pub mod transactions;
 pub mod users;
 
@@ -16,14 +17,13 @@ use tower_http::{
 use self::{
     budget::budget_management::{
         create_budget, delete_budget, get_budget, get_budget_by_id, update_budget,
-    },
-    transactions::transaction_management::{
-        create_transaction, delete_transaction, get_transaction_by_id, get_transactions, update_transaction
-    },
-    users::{
+    }, tip::tip_management::create_tip, transactions::transaction_management::{
+        create_transaction, delete_transaction, get_transaction_by_id, get_transactions,
+        update_transaction,
+    }, users::{
         authectication::{login, register_user},
         user_management::{delete_user, get_user_by_id, get_users, update_user},
-    },
+    }
 };
 
 use crate::{app_state::AppState, middleware::auth_middleware::require_authentication};
@@ -61,6 +61,7 @@ pub fn create_routes(state: AppState) -> Router {
         .route("/api/v1/transactions/:id", get(get_transaction_by_id))
         .route("/api/v1/transactions/:id", put(update_transaction))
         .route("/api/v1/transactions/:id", delete(delete_transaction))
+        .route("/api/v1/tip", post(create_tip))
         .route_layer(middleware::from_fn_with_state(
             state.clone(),
             require_authentication,
