@@ -1,10 +1,16 @@
 pub mod tip_management;
 
 use chrono::NaiveDateTime;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
 pub struct TipData {
+    pub tip_message: String,
+    pub created_at: NaiveDateTime,
+}
+
+#[derive(Serialize)]
+pub struct TipResponseData {
     pub tip_message: String,
     pub created_at: NaiveDateTime,
 }
