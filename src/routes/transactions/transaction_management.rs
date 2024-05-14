@@ -40,15 +40,16 @@ pub async fn get_transactions(
     Extension(user_id): Extension<i32>,
 ) -> Result<Json<(MessageResponse, Vec<ResponseTransactionData>)>, AppError> {
     let transaction_data = get_transactions_query(&db, user_id).await?;
-    let mut data: Vec<ResponseTransactionData> = vec![];
-    for entry in transaction_data {
-        data.push(ResponseTransactionData {
+    let data: Vec<ResponseTransactionData> = transaction_data
+        .into_iter()
+        .map(|entry| ResponseTransactionData {
             id: entry.id,
             balance: entry.balance,
             category: entry.category,
             update_at: entry.update_at,
         })
-    }
+        .collect();
+
     let respose_message = MessageResponse {
         message: "Fetch Suceessful".to_owned(),
     };

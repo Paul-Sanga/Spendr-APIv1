@@ -1,13 +1,22 @@
 use axum::http::StatusCode;
-use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter,
+    Set,
+};
 
 use crate::{
     database::{
         prelude::Users,
         users::{self, Model},
     },
-    routes::users::UpdateUserData,
-    utilities::app_error::AppError,
+    routes::users::{
+        AuthenticationResponseData, RequestUserData, RequestUserLoginCred, UpdateUserData,
+    },
+    utilities::{
+        app_error::AppError,
+        jwt_utils::create_token,
+        password_utils::{hash_password, verify_password},
+    },
 };
 
 pub async fn check_user_existence(
@@ -34,6 +43,105 @@ pub async fn check_user_existence(
         }
     } else {
         return Ok((false, None));
+    }
+}
+
+pub async fn create_user_query(
+    db: &DatabaseConnection,
+    user_data: RequestUserData,
+) -> Result<users::ActiveModel, AppError> {
+    let (user_existence, _) = check_user_existence(db, &user_data.email).await?;
+    if user_existence {
+        return Err(AppError::new(
+            StatusCode::BAD_REQUEST,
+            "This email is already registered",
+        ));
+    } else {
+        let user_model = users::ActiveModel {
+            first_name: Set(user_data.first_name),
+            last_name: Set(user_data.last_name),
+            email: Set(user_data.email),
+            password: Set(hash_password(user_data.password)?),
+            ..Default::default()
+        };
+        if let Ok(user_model) = user_model.save(db).await {
+            return Ok(user_model);
+        } else {
+            return Err(AppError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "internal server error",
+            ));
+        }
+    }
+}
+
+pub async fn login_user(
+    db: &DatabaseConnection,
+    user_data: RequestUserLoginCred,
+) -> Result<AuthenticationResponseData, AppError> {
+    let (user_exitence, user_model) = check_user_existence(db, &user_data.email).await?;
+
+    if !user_exitence {
+        return Err(AppError::new(
+            StatusCode::BAD_REQUEST,
+            "invalid login credentials",
+        ));
+    }
+
+    if let Some(user_model) = user_model {
+        if !verify_password(user_data.password, user_model.password)? {
+            return Err(AppError::new(
+                StatusCode::BAD_REQUEST,
+                "invalid login credentials",
+            ));
+        } else {
+            let token = create_token(&user_model.email, user_model.id)?;
+            let auth_response = AuthenticationResponseData {
+                email: user_model.email,
+                token,
+                last_name: user_model.last_name,
+                first_name: user_model.first_name,
+            };
+            return Ok(auth_response);
+        }
+    } else {
+        return Err(AppError::new(
+            StatusCode::CONFLICT,
+            "user account is deleted",
+        ));
+    }
+}
+
+pub async fn restore_user_account_query(
+    db: &DatabaseConnection,
+    user_data: RequestUserLoginCred,
+) -> Result<users::ActiveModel, AppError> {
+    let user_model = Users::find()
+        .filter(users::Column::Email.eq(user_data.email))
+        .one(db)
+        .await
+        .map_err(|error| {
+            eprintln!("\x1b[31m error restoring user account: {:?} \x1b[0m", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+        })?;
+
+    if let Some(user_model) = user_model {
+        let mut user_model = user_model.into_active_model();
+        user_model.is_deleted = Set(false);
+        return match user_model.save(db).await {
+            Ok(user_model) => Ok(user_model),
+            Err(_error) => {
+                return Err(AppError::new(
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "internal server error",
+                ));
+            }
+        };
+    } else {
+        return Err(AppError::new(
+            StatusCode::BAD_REQUEST,
+            "invalid email address",
+        ));
     }
 }
 
