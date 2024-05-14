@@ -1,7 +1,13 @@
 use axum::http::StatusCode;
-use sea_orm::{ActiveModelTrait, DatabaseConnection, Set};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, QueryFilter, Set,
+};
 
-use crate::{database::tip, routes::tip::TipData, utilities::app_error::AppError};
+use crate::{
+    database::{prelude::Tip, tip},
+    routes::tip::TipData,
+    utilities::app_error::AppError,
+};
 
 pub async fn create_tip_query(
     db: &DatabaseConnection,
@@ -21,5 +27,30 @@ pub async fn create_tip_query(
             StatusCode::INTERNAL_SERVER_ERROR,
             "internal server error",
         ));
+    }
+}
+
+pub async fn get_tip_by_id_query(
+    db: &DatabaseConnection,
+    user_id: i32,
+    tip_id: i32,
+) -> Result<tip::Model, AppError> {
+    let tip_model = Tip::find()
+        .filter(
+            Condition::all()
+                .add(tip::Column::Id.eq(tip_id))
+                .add(tip::Column::UserId.eq(user_id)),
+        )
+        .one(db)
+        .await
+        .map_err(|error| {
+            eprintln!("\x1b[31m error getting tip by id: {:?} \x1b[0m", error);
+            AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "internal server error")
+        })?;
+
+    if let Some(tip_model) = tip_model {
+        return Ok(tip_model);
+    } else {
+        return Err(AppError::new(StatusCode::NOT_FOUND, "invalid tip id"));
     }
 }
