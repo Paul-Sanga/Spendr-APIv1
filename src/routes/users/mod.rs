@@ -38,7 +38,8 @@ pub struct RequestUserLoginCred {
 
 #[derive(Serialize)]
 pub struct ResponseUserData {
-    email: String,
-    last_name: String,
-    first_name: String,
+    pub id: i32,
+    pub email: String,
+    pub last_name: String,
+    pub first_name: String,
 }
