@@ -24,6 +24,7 @@ pub async fn get_users(
             first_name: entry.first_name,
             last_name: entry.last_name,
             email: entry.email,
+            id: entry.id,
         })
         .collect();
     Ok(Json(user_data))
@@ -39,6 +40,7 @@ pub async fn get_user_by_id(
             first_name: user.first_name,
             last_name: user.last_name,
             email: user.email,
+            id: user.id,
         };
         return Ok(Json(user_data));
     } else {
