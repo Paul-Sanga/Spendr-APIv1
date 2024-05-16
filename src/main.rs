@@ -1,5 +1,4 @@
 use dotenvy::dotenv;
-use dotenvy_macro::{self, dotenv};
 use sea_orm::Database;
 use spendr_api::{app_state::AppState, App};
 
@@ -7,7 +6,11 @@ use spendr_api::{app_state::AppState, App};
 async fn main() {
     dotenv().ok();
 
-    let database_url = dotenv!("DATABASE_URL");
+    let database_url = if let Ok(database_url) = dotenvy::var("DATABASE_URL") {
+        database_url
+    } else {
+        panic!("\x1b[31m database url not specified \x1b[0m")
+    };
     let db = match Database::connect(database_url).await {
         Ok(db) => db,
         Err(error) => {
