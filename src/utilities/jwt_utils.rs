@@ -1,7 +1,6 @@
 use axum::http::StatusCode;
 use chrono::Duration;
 
-use dotenvy_macro::dotenv;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation};
 use serde::{Deserialize, Serialize};
 
@@ -15,9 +14,16 @@ pub struct Claims {
 }
 
 pub fn create_token(email: &String, id: i32) -> Result<String, AppError> {
-    let secret_key = dotenv!("SECRET_KEY")
-        .parse::<String>()
-        .expect("Secret key must be a strig");
+    let secret_key = if let Ok(secret_key) = dotenvy::var("SECRET_KEY") {
+        secret_key
+    } else {
+        eprintln!("\x1b[31m secret key iis not specified \x1b[0m");
+        return Err(AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "internal server error",
+        ));
+    };
+
     let email = String::from(email);
     let expires_at = chrono::Utc::now() + Duration::hours(1);
     let exp = expires_at.timestamp() as usize;
@@ -32,9 +38,16 @@ pub fn create_token(email: &String, id: i32) -> Result<String, AppError> {
 }
 
 pub fn validate_token(token: &str) -> Result<TokenData<Claims>, AppError> {
-    let secret_key = dotenv!("SECRET_KEY")
-        .parse::<String>()
-        .expect("Secret key must be a strig");
+    let secret_key = if let Ok(secret_key) = dotenvy::var("SECRET_KEY") {
+        secret_key
+    } else {
+        eprintln!("\x1b[31m secret key iis not specified \x1b[0m");
+        return Err(AppError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "internal server error",
+        ));
+    };
+
     let key = DecodingKey::from_secret(secret_key.as_bytes());
     let validation = Validation::new(jsonwebtoken::Algorithm::HS256);
     decode::<Claims>(token, &key, &validation)
