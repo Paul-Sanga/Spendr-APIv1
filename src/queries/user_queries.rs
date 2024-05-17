@@ -126,17 +126,24 @@ pub async fn restore_user_account_query(
         })?;
 
     if let Some(user_model) = user_model {
-        let mut user_model = user_model.into_active_model();
-        user_model.is_deleted = Set(false);
-        return match user_model.save(db).await {
-            Ok(user_model) => Ok(user_model),
-            Err(_error) => {
-                return Err(AppError::new(
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    "internal server error",
-                ));
-            }
-        };
+        if user_model.is_deleted {
+            let mut user_model = user_model.into_active_model();
+            user_model.is_deleted = Set(false);
+            return match user_model.save(db).await {
+                Ok(user_model) => Ok(user_model),
+                Err(_error) => {
+                    return Err(AppError::new(
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        "internal server error",
+                    ));
+                }
+            };
+        } else {
+            return Err(AppError::new(
+                StatusCode::CONFLICT,
+                "account is already active",
+            ));
+        }
     } else {
         return Err(AppError::new(
             StatusCode::BAD_REQUEST,
